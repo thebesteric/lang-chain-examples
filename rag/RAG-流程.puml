@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+title 文本向量化过程
+actor 用户 as user
+
+autonumber
+user -> "RAG Client": 上传文档
+activate "RAG Client"
+"RAG Client" -> "RAG Server": 上传文档
+activate "RAG Server"
+"RAG Server" -> "RAG Server": 读取文件
+"RAG Server" -> "RAG Server": 文档内容切片
+"RAG Server" -> "RAG Server": 切片内容向量化
+"RAG Server" -> "Embed DB": 存储到向量数据库
+activate "Embed DB"
+"Embed DB" --> "RAG Server": 生成文档检索器
+deactivate "Embed DB"
+"RAG Server" --> "RAG Client": 返回
+"RAG Client" --> user: 文档上传成功
+deactivate "RAG Server"
+deactivate "RAG Client"
+
+
+autonumber
+user -> "RAG Client": 提问
+activate "RAG Client"
+"RAG Client" -> "RAG Server": 请求服务
+activate "RAG Server"
+"RAG Server" -> "Embed DB": 调用文档检索器
+activate "Embed DB"
+"Embed DB" --> "RAG Server": 返回文档片段
+deactivate "Embed DB"
+"RAG Server" -> "RAG Server": 根据文档片段组织语言
+"RAG Server" --> "RAG Client": 返回结果
+deactivate "RAG Server"
+"RAG Client" --> user: 返回结果
+deactivate "RAG Client"
+
+@enduml
